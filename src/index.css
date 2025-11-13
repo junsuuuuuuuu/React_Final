@@ -1,3 +1,48 @@
+/* index.css */
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
 body {
   font-family: 'Pretendard', sans-serif;
   background: linear-gradient(120deg, #a1c4fd, #c2e9fb);
@@ -23,6 +68,7 @@ body {
   margin: 10px auto;
 }
 
+/* 입력 요소 공통 스타일 */
 input, textarea, button {
   display: block;
   width: 100%;
@@ -30,6 +76,50 @@ input, textarea, button {
   padding: 8px;
   border-radius: 8px;
   border: none;
+  resize: none; 
+  /* 💡 폰트 통일성을 명시적으로 보장 */
+  font-family: inherit; 
+  font-size: 1em; 
+}
+
+/* 💡 [추가] 날짜 입력 필드의 너비를 좁히고 가운데 정렬 */
+.date-input {
+  width: 50%; /* 가로 너비를 50%로 줄임 */
+  margin: 10px auto; /* 좌우 마진을 auto로 설정하여 가운데 정렬 */
+}
+
+/* ------------------------------------------- */
+/* Placeholder 스타일 통일 */
+/* ------------------------------------------- */
+
+/* Chrome, Safari, Opera (대부분의 브라우저) */
+.glass-card ::placeholder {
+  font-family: inherit; /* 일반 텍스트 폰트 상속 */
+  font-size: 1em; /* 일반 텍스트 폰트 크기 상속 */
+  color: #a0a0a0; /* Placeholder 색상 (흐리게) */
+  opacity: 1; 
+}
+
+/* Firefox */
+.glass-card :-moz-placeholder {
+  font-family: inherit;
+  font-size: 1em;
+  color: #a0a0a0;
+  opacity: 1;
+}
+
+/* Edge, IE */
+.glass-card ::-ms-input-placeholder {
+  font-family: inherit;
+  font-size: 1em;
+  color: #a0a0a0;
+}
+
+
+/* 메시지 입력창 세로 길이 확장 */
+textarea {
+  min-height: 150px; 
+  box-sizing: border-box; 
 }
 
 button {
@@ -37,4 +127,156 @@ button {
   background-color: #4e89ff;
   color: white;
   font-weight: bold;
+}
+
+/* 새 캡슐 만들기 버튼 스타일 */
+.create-capsule-button {
+  display: block; 
+  margin: 20px auto 30px auto; 
+  
+  padding: 14px 40px; 
+  background-color: #5d54a4; 
+  color: white; 
+  text-decoration: none; 
+  border-radius: 10px; 
+  font-size: 1.2em; 
+  font-weight: bold;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
+  transition: all 0.2s ease-in-out; 
+  
+  width: fit-content; 
+  max-width: 100%;
+  text-align: center;
+}
+
+/* 마우스 호버 시 효과 */
+.create-capsule-button:hover {
+  background-color: #7b6fbb; 
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); 
+  transform: translateY(-2px); 
+}
+
+/* ------------------------------------------- */
+/* CapsuleCard 내부 버튼 스타일 */
+/* ------------------------------------------- */
+
+/* 열어보기 버튼 (단독 사용) */
+.open-button {
+    padding: 10px 20px; 
+    font-size: 1em; 
+    cursor: pointer;
+    width: auto; 
+    display: inline-block; 
+}
+
+/* 닫기/삭제 버튼을 감싸는 그룹 설정 */
+.button-group {
+    display: flex; 
+    gap: 10px; 
+    margin-top: 15px;
+    justify-content: center; /* 버튼 중앙 정렬 */
+    /* width: 100% 를 삭제하거나, auto 로 변경하여 컨텐츠 크기만큼만 영역을 차지하도록 함 */
+    width: auto; 
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 닫기 및 삭제 버튼 공통 스타일 (높이 및 크기 통일) */
+.delete-button, .close-button {
+    /* 전역 width: 100% 오버라이드 */
+    /* 버튼이 그룹 내에서 균등한 비율로 공간을 채우도록 flex-grow를 사용 */
+    width: 150px; /* 적당한 고정 너비 지정 */
+    max-width: 48%; /* 부모 요소의 48%를 넘지 않게 하여 유연성 확보 */
+    flex-grow: 1; /* 가용한 공간을 균등하게 차지하도록 함 */
+    
+    /* 전역 display: block 오버라이드 */
+    display: inline-block; 
+    
+    /* 높이 및 여백 통일 */
+    height: 40px; 
+    padding: 8px 15px; 
+    
+    /* 전역 margin: 10px 0; 오버라이드 */
+    margin: 0; 
+    font-weight: bold; 
+}
+
+/* 삭제 버튼 전용 스타일 */
+.delete-button {
+    background-color: #dc3545; /* 빨간색 */
+}
+
+/* 닫기 버튼 전용 스타일 */
+.close-button {
+    background-color: #6c757d; /* 회색 */
+}
+
+/* ------------------------------------------- */
+/* ViewCapsule.jsx 및 CapsuleForm.jsx 스타일 */
+/* ------------------------------------------- */
+
+/* CapsuleForm 개봉 예정일 미리 보기 텍스트 */
+.preview-text {
+  margin-top: 10px; 
+  font-size: 1.1em; 
+  color: #ff7e5f; /* 주황색 톤 */
+  font-weight: bold;
+}
+
+/* ViewCapsule 에러 메시지 텍스트 */
+.error-message {
+  color: red;
+}
+
+/* ViewCapsule 메시지 내용 (줄 바꿈 처리) */
+.message-content {
+  /* 메시지 내용에 줄 바꿈(pre-wrap) 적용 */
+  white-space: pre-wrap;
+}
+.file-label {
+    display: block; 
+    width: 100%;
+    margin: 10px 0;
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    
+    /* 기본 버튼과 구별되는 스타일 */
+    background-color: #5d54a4; /* create-capsule-button과 동일 색상 사용 */
+    color: white;
+    font-weight: bold;
+    box-sizing: border-box; /* padding이 width를 벗어나지 않도록 */
+}
+
+/* ViewCapsule 이미지/미디어 표시 */
+.capsule-media {
+    max-width: 100%; /* 캡슐 크기에 맞춰 최대 너비 설정 */
+    height: auto;
+    border-radius: 10px; /* 둥근 모서리 */
+    margin-top: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+}
+
+/* 이미지 크기 통일 */
+.capsule-image {
+  width: 200px;  /* 이미지의 고정된 너비 */
+  height: 150px; /* 이미지의 고정된 높이 */
+  object-fit: cover; /* 비율 유지하며 잘라내기 */
+  border-radius: 8px; /* 부드러운 모서리 */
+  margin: 5px; /* 이미지 간 간격 */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* 그림자 효과 */
+}
+
+/* 여러 이미지를 가로로 정렬 */
+.capsule-images-container {
+  display: flex;
+  flex-wrap: wrap; /* 공간이 부족하면 다음 줄로 넘어가도록 */
+  justify-content: center; /* 가운데 정렬 (선택 사항) */
+  gap: 10px; /* 이미지 컨테이너들 사이의 간격 */
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
