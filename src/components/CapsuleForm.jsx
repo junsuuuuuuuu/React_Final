@@ -1,76 +1,68 @@
 // src/components/CapsuleForm.jsx
-
-import { useState } from "react";
+import { useState, useCallback } from "react"; // useCallback 추가
 import { db, storage } from "../firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
+
+// 💡 [최적화] 파일명 변환 함수를 컴포넌트 외부로 분리 (순수 함수)
+const sanitizeFileName = (name) => {
+  const timestamp = Date.now();
+  const extension = name.split('.').pop();
+  // 파일명에서 공백, 한글, 특수문자 제거
+  const baseName = name
+    .replace(/\s+/g, "_")
+    .replace(/[^a-zA-Z0-9_-]/g, "");
+  return `${baseName}_${timestamp}.${extension}`;
+};
 
 function CapsuleForm() {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [openAt, setOpenAt] = useState("");
   
-  // 💡 [수정] 단일 파일(file) 대신, 파일 배열(files)을 저장합니다.
+  // 파일 배열을 저장합니다.
   const [files, setFiles] = useState([]); 
   const [isLoading, setIsLoading] = useState(false); 
   
   const navigate = useNavigate();
 
+  // 💡 [UI/UX 개선] 파일 개별 삭제 함수
+  const handleRemoveFile = useCallback((indexToRemove) => {
+    setFiles(prevFiles => prevFiles.filter((_, index) => index !== indexToRemove));
+  }, []); // files에 의존성이 없으므로, 한 번만 생성됩니다.
+
   const handleFileChange = (e) => {
-    if (e.target.files.length > 0) {
-      // 새로 선택된 파일들을 배열로 변환
-      const selectedFiles = Array.from(e.target.files); 
-      
-      // 기존 파일 목록과 새 파일을 합칩니다.
-      const newFiles = [...files, ...selectedFiles];
+    const selectedFiles = Array.from(e.target.files); 
+    const newFiles = [...files, ...selectedFiles];
 
-      // 💡 [핵심 로직] 최대 3개까지만 허용
-      if (newFiles.length > 3) {
-        alert("파일은 최대 3개까지만 첨부할 수 있습니다.");
-        // 배열을 앞에서부터 3개까지만 잘라서 저장
-        setFiles(newFiles.slice(0, 3)); 
-      } else {
-        setFiles(newFiles);
-      }
+    if (newFiles.length > 3) {
+      alert("파일은 최대 3개까지만 첨부할 수 있습니다.");
+      setFiles(newFiles.slice(0, 3)); 
+    } else {
+      setFiles(newFiles);
     }
-    // 파일을 비울 때는 <button onClick={() => setFiles([])}> 같은 것을 사용해야 합니다.
+    
+    // 파일 입력 필드를 초기화하여 같은 파일을 다시 선택해도 change 이벤트가 발생하도록 함
+    e.target.value = null; 
   };
-
-  // 💡 파일명을 안전하게 변환 (영문+숫자+_만)
-  const sanitizeFileName = (name) => {
-    const timestamp = Date.now();
-    const extension = name.split('.').pop();
-    // 파일명에서 공백, 한글, 특수문자 제거
-    const baseName = name
-      .replace(/\s+/g, "_")           // 공백 → _
-      .replace(/[^a-zA-Z0-9_-]/g, ""); 
-    return `${baseName}_${timestamp}.${extension}`;
-  };
-
-  const handleSubmit = async (e) => {
+  
+  // 💡 [Hooks 활용] useCallback을 사용하여 제출 함수를 최적화
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // 💡 [수정] 단일 fileUrl 대신, URL 배열을 저장합니다.
     let fileUrls = []; 
 
     try {
       if (files.length > 0) {
         // 모든 파일 업로드를 Promise.all로 병렬 처리
         const uploadPromises = files.map(file => {
-          // 파일명 충돌 방지를 위해 파일별로 Ref 생성
           const storageRef = ref(storage, `capsule_files/${sanitizeFileName(file.name)}`);
-          
-          // 업로드 및 다운로드 URL 획득 작업을 Promise로 반환
-          return uploadBytes(storageRef, file).then(snapshot => {
-            return getDownloadURL(snapshot.ref);
-          });
+          return uploadBytes(storageRef, file).then(snapshot => getDownloadURL(snapshot.ref));
         });
         
-        // 모든 업로드가 완료될 때까지 기다림
         fileUrls = await Promise.all(uploadPromises);
-        console.log("모든 파일 업로드 완료, URLs:", fileUrls);
       }
 
       // 캡슐 데이터 Firestore에 저장
@@ -78,25 +70,24 @@ function CapsuleForm() {
         title,
         message,
         openAt,
-        // 💡 [수정] fileUrls 배열을 Firestore에 저장
         fileUrls: fileUrls, 
         createdAt: new Date(),
       });
 
-      console.log("Firestore 저장 성공, doc ID:", docRef.id, "fileUrls:", fileUrls);
       alert("타임캡슐이 저장되었습니다!");
       navigate("/");
 
     } catch (error) {
       console.error("저장/업로드 오류:", error);
-      alert("타임캡슐 저장/업로드 실패. 콘솔과 Firebase 규칙을 확인하세요.");
+      alert("타임캡슐 저장/업로드 실패. 콘솔 확인.");
     } finally {
       setIsLoading(false); 
     }
-  };
+  }, [files, title, message, openAt, navigate]); // 의존성 배열 명확화
 
   return (
-    <form onSubmit={handleSubmit} className="glass-card">
+    <form onSubmit={handleSubmit} className="glass-card capsule-form">
+      <h3>새 타임캡슐 만들기</h3>
       <input
         type="text"
         placeholder="제목"
@@ -111,45 +102,52 @@ function CapsuleForm() {
         required
       />
       
-      <label className="file-label">
-        {/* 💡 [수정] 파일 개수를 표시하고, 최대 개수를 알립니다. */}
-        {files.length > 0 ? `사진 ${files.length}개 선택됨` : "사진 선택 (최대 3개)"}
+      <label className="file-label custom-button">
+        {files.length > 0 ? `사진 ${files.length}/3개 선택됨` : "📸 사진 선택 (최대 3개)"}
         <input
           type="file"
           accept="image/*"
           onChange={handleFileChange}
-          // 💡 [수정] multiple 속성을 추가하여 여러 파일 선택 허용
           multiple 
           style={{ display: 'none' }}
         />
       </label>
 
-      {/* 💡 [추가] 선택된 파일 목록을 보여주는 UI */}
+      {/* 💡 [개선] 선택된 파일 목록 및 개별 삭제 UI */}
       {files.length > 0 && (
-        <div className="file-preview">
+        <div className="file-preview-list">
           {files.map((file, index) => (
-            <span key={index} className="file-name">{file.name}</span>
+            <div key={index} className="file-item">
+              <span className="file-name">{file.name}</span>
+              <button 
+                type="button" 
+                onClick={() => handleRemoveFile(index)} 
+                className="remove-file-button"
+              >
+                X
+              </button>
+            </div>
           ))}
-          {/* 파일 초기화 버튼 */}
-          <button type="button" onClick={() => setFiles([])} className="reset-file-button">
-            X 파일 전체 삭제
+          {/* 파일 전체 초기화 버튼 (필요시 사용) */}
+          <button type="button" onClick={() => setFiles([])} className="reset-all-button">
+            🗑️ 파일 전체 초기화
           </button>
         </div>
       )}
 
 
       <input
-        type="text" // 텍스트 타입으로 변경해야 placeholder가 보입니다.
-        placeholder="클릭해서 개봉 날짜를 정해주세요" // 원하는 배경 문구 추가
+        type="text" 
+        placeholder="클릭해서 개봉 날짜를 정해주세요"
         value={openAt}
         onChange={(e) => setOpenAt(e.target.value)}
-        onFocus={(e) => (e.target.type = 'date')} // 클릭하면 날짜 선택 창이 열리도록 다시 type 변경
-        onBlur={(e) => openAt === "" && (e.target.type = 'text')} // 값이 없으면 다시 text 타입으로 복구
+        onFocus={(e) => (e.target.type = 'date')} 
+        onBlur={(e) => openAt === "" && (e.target.type = 'text')}
         required
       />
       
       <button type="submit" disabled={isLoading}>
-        {isLoading ? "저장 중..." : "캡슐 저장하기"}
+        {isLoading ? "⏳ 저장 중..." : "🚀 캡슐 저장하기"}
       </button>
     </form>
   );

@@ -7,8 +7,13 @@ import { doc, deleteDoc } from "firebase/firestore"; // Firestore 삭제 함수
 function CapsuleCard({ capsule, onDelete }) { 
   const [isOpened, setIsOpened] = useState(false);
   const now = dayjs();
-  const openDate = dayjs(capsule.openAt);
   
+  // 캡슐 데이터에서 날짜 정보 가져오기
+  const openDate = dayjs(capsule.openAt);
+  // createdAt은 Home.jsx에서 이미 Date 객체로 변환되었거나 Firestore Timestamp일 수 있습니다.
+  // 안전하게 dayjs로 변환하여 사용합니다.
+  const saveDate = dayjs(capsule.createdAt); 
+
   // 오늘 날짜를 포함, 미래 날짜일 경우에만 잠김 (true)
   const isLocked = now.isBefore(openDate, 'day'); 
 
@@ -30,12 +35,21 @@ function CapsuleCard({ capsule, onDelete }) {
   };
 
   return (
-    <div className="glass-card">
+    <div className={`glass-card capsule-card ${isLocked ? 'locked' : 'unlocked'}`}>
       <h3>{capsule.title}</h3>
+      
+      {/* 💡 [추가된 기능] 저장 날짜 표시 */}
+      <p className="save-date">
+        저장일: {saveDate.format("YYYY-MM-DD")}
+      </p>
+
+      <p className="open-date">개봉 예정일: {openDate.format("YYYY-MM-DD")}</p>
       
       {isLocked ? (
         // 🔒 잠긴 상태
-        <p>🔒 {openDate.format("YYYY-MM-DD")} 에 열립니다</p>
+        <div className="locked-state">
+          <p>🔒 아직 열 수 없어요.</p>
+        </div>
       ) : (
         // 🔓 개봉 가능 상태
         <>
@@ -44,7 +58,7 @@ function CapsuleCard({ capsule, onDelete }) {
             <div className="opened-content">
               <p className="opened-message">{capsule.message}</p>
               
-              {/* 💡 [수정] 이미지들을 감싸는 컨테이너 추가 및 map 함수로 이미지 출력 */}
+              {/* 이미지 출력 로직 */}
               {Array.isArray(capsule.fileUrls) && capsule.fileUrls.length > 0 && (
                 <div className="capsule-images-container"> 
                   {capsule.fileUrls.map((url, index) => (
@@ -52,21 +66,19 @@ function CapsuleCard({ capsule, onDelete }) {
                       key={index} 
                       src={url} 
                       alt={`첨부 이미지 ${index + 1}`} 
-                      className="capsule-image" // 💡 크기를 제어할 클래스
+                      className="capsule-image" 
                     />
                   ))}
                 </div>
               )}
               
               <div className="button-group">
-                {/* 닫기 버튼 */}
                 <button 
                   onClick={handleClose} 
                   className="close-button" 
                 >
                   🚪 닫기
                 </button>
-                {/* 삭제 버튼 */}
                 <button 
                   onClick={handleDelete} 
                   className="delete-button" 
@@ -81,7 +93,7 @@ function CapsuleCard({ capsule, onDelete }) {
               onClick={handleOpen} 
               className="open-button" 
             >
-              {openDate.format("YYYY-MM-DD")} 캡슐 열어보기
+              🎉 캡슐 열어보기
             </button>
           )}
         </>
