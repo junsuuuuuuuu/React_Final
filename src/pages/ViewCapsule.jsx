@@ -6,6 +6,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 
 function CapsuleForm() {
+  // 입력 필드와 파일 업로드 상태
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [openAt, setOpenAt] = useState("");
@@ -19,6 +20,7 @@ function CapsuleForm() {
   };
 
   const sanitizeFileName = (name) => {
+    // 공백/특수문자를 제거하고 타임스탬프를 붙여 파일명 충돌 방지
     const timestamp = Date.now();
     const extension = name.split('.').pop();
     const baseName = name.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_-]/g, "");
@@ -33,12 +35,14 @@ function CapsuleForm() {
 
     try {
       if (file) {
+        // Storage에 파일 업로드 후 다운로드 URL 확보
         const storageRef = ref(storage, `capsule_files/${sanitizeFileName(file.name)}`);
         await uploadBytes(storageRef, file);
         fileUrl = await getDownloadURL(storageRef);
         console.log("파일 업로드 완료, URL:", fileUrl);
       }
 
+      // 캡슐 메타 데이터를 Firestore에 저장
       const docRef = await addDoc(collection(db, "capsules"), {
         title,
         message,

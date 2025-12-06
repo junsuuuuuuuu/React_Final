@@ -6,7 +6,9 @@ import CapsuleCard from "../components/CapsuleCard";
 import dayjs from "dayjs";
 
 function Home() {
+  // 화면에 보여줄 캡슐 리스트 데이터
   const [capsules, setCapsules] = useState([]);
+  // 정렬 기준 상태: 기본값은 개봉일 임박순
   const [sortBy, setSortBy] = useState('openAt_asc'); // 정렬 상태: 'openAt_asc' (가장 빨리 열리는 순)
   const [isLoading, setIsLoading] = useState(true);
 
@@ -81,6 +83,7 @@ function Home() {
       </div>
 
       <div className="capsule-list">
+        {/* 정렬 기준에 맞춰 렌더링된 카드 목록 */}
         {sortedCapsules.length > 0 ? (
           sortedCapsules.map(c => 
             <CapsuleCard 

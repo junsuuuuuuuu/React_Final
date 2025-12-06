@@ -1,321 +1,319 @@
-/* index.css */
+/* 디지털 타임캡슐 전역 스타일 정의 파일입니다. */
 
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+:root {
+  --bg: #f5f7f4;
+  --surface: #ffffff;
+  --border: #dbe5de;
+  --text: #1e2b23;
+  --muted: #6d7b71;
+  --accent: #2f9e44;
+  --accent-strong: #1f7a35;
+  --danger: #d64550;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
+* { box-sizing: border-box; }
 
 body {
-  font-family: 'Pretendard', sans-serif;
-  background: linear-gradient(120deg, #a1c4fd, #c2e9fb);
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
   min-height: 100vh;
   margin: 0;
-  padding: 0;
 }
 
-.container {
-  width: 90%;
-  max-width: 600px;
+#root {
+  max-width: 1040px;
   margin: 0 auto;
-  padding: 20px;
-  text-align: center;
+  padding: 32px 20px 48px;
 }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 15px;
-  padding: 20px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 30px rgba(0,0,0,0.1);
-  margin: 10px auto;
+a { color: inherit; }
+
+.container { width: 100%; }
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 }
 
-/* ------------------------------------------- */
-/* 🛠️ [수정] 입력 요소 공통 스타일 - 가로 길이 100% 통일 */
-/* ------------------------------------------- */
-input, textarea, button {
-  display: block;
-  width: 100%; /* 모든 입력, 텍스트 영역, 버튼의 너비를 100%로 통일 */
-  margin: 10px 0;
-  padding: 10px; /* 패딩을 10px로 통일 */
-  border-radius: 8px;
+.page-header {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.page-header h1 {
+  margin: 6px 0 10px;
+  font-size: 28px;
+  letter-spacing: -0.2px;
+}
+
+.page-meta {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+  font-size: 11px;
+  color: var(--accent-strong);
+  margin: 0;
+}
+
+.header-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.primary-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 12px;
+  text-decoration: none;
+  background: var(--accent);
+  color: #ffffff;
+  font-weight: 700;
+  border: 1px solid var(--accent-strong);
+}
+
+.sort-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 12px;
+  background: #eef3ef;
+  border: 1px solid var(--border);
+}
+
+.sort-control label {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.sort-control select {
+  width: auto;
+  background: transparent;
+  color: var(--text);
   border: none;
-  resize: none; 
-  font-family: inherit; 
-  font-size: 1em; 
-  box-sizing: border-box; /* 패딩이 width를 초과하지 않도록 설정 */
+  outline: none;
+  font-weight: 600;
 }
 
-/* 💡 [제거/수정] date-input 스타일: 더 이상 필요 없거나 Form 내부에서 직접 제어*/
-/* Form 컴포넌트 내부에서 모든 필드의 너비를 100%로 통일했기 때문에 이 클래스는 제거하거나 사용하지 않습니다. */
-/* .date-input { width: 50%; margin: 10px auto; } */
-
-
-/* ------------------------------------------- */
-/* Placeholder 스타일 통일 */
-/* ------------------------------------------- */
-
-/* Chrome, Safari, Opera (대부분의 브라우저) */
-.glass-card ::placeholder {
-  font-family: inherit;
-  font-size: 1em;
-  color: #a0a0a0;
-  opacity: 1; 
+.capsule-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
 }
 
-/* Firefox */
-.glass-card :-moz-placeholder {
-  font-family: inherit;
-  font-size: 1em;
-  color: #a0a0a0;
-  opacity: 1;
+.capsule-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* Edge, IE */
-.glass-card ::-ms-input-placeholder {
-  font-family: inherit;
-  font-size: 1em;
-  color: #a0a0a0;
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
 }
 
+.card-titles h3 {
+  margin: 4px 0;
+  font-size: 18px;
+}
 
-/* 메시지 입력창 세로 길이 확장 */
-textarea {
-  min-height: 150px; 
-  /* box-sizing: border-box; 는 이미 공통 스타일에 포함됨 */
+.eyebrow-sm {
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  color: var(--accent-strong);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.pill {
+  height: fit-content;
+  padding: 8px 11px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  background: #eef3ef;
+  color: var(--muted);
+}
+
+.pill-open {
+  background: #e6f4ea;
+  color: var(--accent-strong);
+  border-color: #cfe7d5;
+}
+
+.locked-note {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f2f6f3;
+  border: 1px dashed var(--border);
+  color: var(--muted);
+}
+
+.capsule-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message {
+  margin: 0;
+  line-height: 1.55;
+  color: #2c372f;
+}
+
+.capsule-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.capsule-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.capsule-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 button {
+  font-family: inherit;
+  font-size: 15px;
+  border: none;
+  border-radius: 10px;
   cursor: pointer;
-  background-color: #4e89ff;
-  color: white;
-  font-weight: bold;
+  padding: 12px 14px;
+  transition: background 0.12s ease, transform 0.12s ease;
 }
 
-/* 새 캡슐 만들기 버튼 스타일 (Home.jsx의 링크 버튼) */
-.create-capsule-button {
-  display: block; 
-  margin: 20px auto 30px auto; 
-  padding: 14px 40px; 
-  background-color: #5d54a4; 
-  color: white; 
-  text-decoration: none; 
-  border-radius: 10px; 
-  font-size: 1.2em; 
-  font-weight: bold;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
-  transition: all 0.2s ease-in-out; 
-  width: fit-content; 
-  max-width: 100%;
-  text-align: center;
+button:active { transform: translateY(1px); }
+
+.primary-button {
+  background: var(--accent);
+  color: #ffffff;
+  font-weight: 700;
+  flex: 1;
 }
 
-/* 마우스 호버 시 효과 */
-.create-capsule-button:hover {
-  background-color: #7b6fbb; 
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); 
-  transform: translateY(-2px); 
+.ghost-button {
+  background: #eef3ef;
+  color: var(--text);
+  border: 1px solid var(--border);
+  flex: 1;
 }
 
-/* ------------------------------------------- */
-/* CapsuleCard 내부 버튼 스타일 (Form 100% width 무력화) */
-/* ------------------------------------------- */
-
-/* 열어보기 버튼 (단독 사용) */
-.open-button {
-    /* 전역 width: 100% 오버라이드 */
-    width: auto; 
-    display: inline-block;
-    padding: 10px 20px; 
-    font-size: 1em; 
-    margin-top: 15px; /* 상단 여백 추가 */
-    margin-bottom: 5px; /* 하단 여백 제거 */
+.danger-button {
+  background: #f2dadd;
+  color: #7c1f29;
+  border: 1px solid #e9c2c8;
 }
 
-/* 닫기/삭제 버튼을 감싸는 그룹 설정 */
-.button-group {
-    display: flex; 
-    gap: 10px; 
-    margin-top: 15px;
-    justify-content: center;
-    width: auto; 
-    margin-left: auto;
-    margin-right: auto;
+input, textarea, select {
+  width: 100%;
+  margin: 8px 0 14px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #f8fbf8;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 15px;
 }
 
-/* 닫기 및 삭제 버튼 공통 스타일 */
-.delete-button, .close-button {
-    /* 전역 width: 100% 오버라이드: flex 아이템으로 동작하도록 재설정 */
-    width: 150px; 
-    max-width: 48%; 
-    flex-grow: 1; 
-    display: block; /* block을 유지하되 flex 컨테이너 내부에서 작동 */
-    
-    /* 높이 및 여백 통일 */
-    height: 40px; 
-    padding: 8px 15px; 
-    
-    /* 전역 margin: 10px 0; 오버라이드 */
-    margin: 0; 
-    font-weight: bold; 
+textarea {
+  min-height: 140px;
+  resize: vertical;
 }
 
-/* 삭제 버튼 전용 스타일 */
-.delete-button {
-    background-color: #dc3545;
+.glass-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
 }
 
-/* 닫기 버튼 전용 스타일 */
-.close-button {
-    background-color: #6c757d;
-}
-
-/* ------------------------------------------- */
-/* CapsuleForm.jsx 스타일 */
-/* ------------------------------------------- */
-
-/* 파일 선택 라벨 (버튼 역할) */
+/* Form helpers */
 .file-label {
-    display: block; 
-    width: 100%;
-    margin: 10px 0;
-    padding: 10px; /* input과 동일하게 10px로 통일 */
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    text-align: center;
-    background-color: #5d54a4;
-    color: white;
-    font-weight: bold;
-    box-sizing: border-box;
+  display: block;
+  text-align: center;
+  padding: 12px;
+  border-radius: 10px;
+  background: #e6f4ea;
+  color: #1f7a35;
+  font-weight: 700;
+  border: 1px dashed #cfe7d5;
+  cursor: pointer;
 }
 
-/* 파일 목록 및 개별 삭제 버튼 스타일 */
 .file-preview-list {
-    margin-bottom: 15px;
-    padding: 10px;
-    border: 1px dashed #ccc;
-    border-radius: 8px;
-    /* width: 100% 통일 */
-    box-sizing: border-box;
+  margin: 10px 0 14px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px dashed var(--border);
+  color: var(--muted);
 }
 
 .file-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
 }
 
 .remove-file-button {
-    /* 전역 width: 100% 오버라이드 */
-    width: auto !important; 
-    margin: 0;
-    padding: 3px 8px;
-    font-size: 12px;
-    background-color: #f44336;
-    color: white;
-    border-radius: 4px;
-    flex-shrink: 0; /* 공간이 부족해도 줄어들지 않도록 */
+  width: auto;
+  padding: 6px 10px;
+  background: #f2dadd;
+  color: #7c1f29;
+  border: 1px solid #e9c2c8;
+  border-radius: 8px;
 }
 
 .reset-all-button {
-    width: 100%; /* 전체 초기화 버튼은 100% 유지 */
-    margin-top: 10px;
-    background-color: #aaa;
-    color: white;
-    border: none;
-    padding: 8px;
+  width: 100%;
+  margin-top: 10px;
+  background: #eef3ef;
+  color: var(--text);
+  border: 1px solid var(--border);
 }
 
-
-/* CapsuleForm 개봉 예정일 미리 보기 텍스트 */
 .preview-text {
-  margin-top: 10px; 
-  font-size: 1.1em; 
-  color: #ff7e5f;
-  font-weight: bold;
+  margin-top: 8px;
+  font-weight: 700;
+  color: var(--accent);
 }
 
-/* ------------------------------------------- */
-/* ViewCapsule.jsx 스타일 */
-/* ------------------------------------------- */
-
-/* ViewCapsule 에러 메시지 텍스트 */
-.error-message {
-  color: red;
-}
-
-/* ViewCapsule 메시지 내용 (줄 바꿈 처리) */
-.message-content {
-  white-space: pre-wrap;
-}
-
-/* ViewCapsule 이미지/미디어 표시 */
-.capsule-media {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-
-}
-
-/* 이미지 크기 통일 */
-.capsule-image {
-  width: 200px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin: 5px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-/* 여러 이미지를 가로로 정렬 */
-.capsule-images-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 15px;
-  margin-bottom: 15px;
-}
+.read-the-docs { color: var(--muted); }

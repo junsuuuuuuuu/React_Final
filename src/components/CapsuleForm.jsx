@@ -17,6 +17,7 @@ const sanitizeFileName = (name) => {
 };
 
 function CapsuleForm() {
+  // 기본 입력 필드 상태
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [openAt, setOpenAt] = useState("");

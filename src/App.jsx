@@ -1,7 +1,8 @@
 // src/App.jsx
+// 캡슐 앱의 라우팅을 정의하는 최상위 컴포넌트입니다.
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import CreateCapsule from "./pages/CreateCapsule"; // 페이지 컴포넌트 사용
+import CreateCapsule from "./pages/CreateCapsule";
 
 function App() {
   return (
@@ -9,10 +10,7 @@ function App() {
       <div className="app-main-layout">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/create" element={<CreateCapsule />} /> 
-          
-          {/* 캡슐 상세 보기 라우트는 필요하다면 추가 */}
-          {/* <Route path="/capsule/:id" element={<ViewCapsule />} /> */}
+          <Route path="/create" element={<CreateCapsule />} />
         </Routes>
       </div>
     </Router>

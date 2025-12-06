@@ -5,6 +5,7 @@ import { db } from "../firebase"; // DB 설정 가져오기
 import { doc, deleteDoc } from "firebase/firestore"; // Firestore 삭제 함수
 
 function CapsuleCard({ capsule, onDelete }) { 
+  // 메시지가 펼쳐져 있는지 여부
   const [isOpened, setIsOpened] = useState(false);
   const now = dayjs();
   
@@ -61,6 +62,7 @@ function CapsuleCard({ capsule, onDelete }) {
               {/* 이미지 출력 로직 */}
               {Array.isArray(capsule.fileUrls) && capsule.fileUrls.length > 0 && (
                 <div className="capsule-images-container"> 
+                  {/* 업로드된 이미지 목록 미리보기 */}
                   {capsule.fileUrls.map((url, index) => (
                     <img 
                       key={index} 

@@ -1,12 +1,11 @@
-// src/firebase.jsx
+// Firebase 앱과 Firestore, Storage를 초기화하는 설정 파일입니다.
 
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore"; // Firestore (데이터베이스)
-import { getStorage } from "firebase/storage";   // Storage (파일 저장소)
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
-// 💡 1. Firebase 콘솔에서 복사한 실제 설정 정보를 여기에 붙여넣습니다.
 const firebaseConfig = {
-  apiKey: "AIzaSyD8VAe0ZRqNB55R7DZDPO MZC9RPZHBJ_FE", // 실제 키 값
+  apiKey: "AIzaSyD8VAe0ZRqNB55R7DZDPO MZC9RPZHBJ_FE",
   authDomain: "react-final-6e81e.firebaseapp.com",
   projectId: "react-final-6e81e",
   storageBucket: "react-final-6e81e.firebasestorage.app",
@@ -15,9 +14,7 @@ const firebaseConfig = {
   measurementId: "G-0F1V5TX1HP"
 };
 
-// 2. Firebase 앱 초기화
 const app = initializeApp(firebaseConfig);
 
-// 3. 서비스 인스턴스를 내보내기
 export const db = getFirestore(app);
 export const storage = getStorage(app);
