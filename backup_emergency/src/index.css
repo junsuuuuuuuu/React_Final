@@ -37,11 +37,6 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   flex-direction: column;
   gap: 18px;
-  border: 1px solid var(--border-strong);
-  border-radius: 18px;
-  padding: 18px;
-  background: var(--surface);
-  box-shadow: var(--shadow);
 }
 
 .container { width: 100%; }
@@ -116,17 +111,14 @@ a { color: inherit; text-decoration: none; }
 .sort-control {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  min-width: 260px;               /* ✅ 전체 박스 자체도 넉넉하게 */
-  height: auto;                   /* ✅ height 고정 제거 (세로 잘림 방지) */
+  gap: 8px;
+  padding: 10px 12px;
+  height: 46px;
   border-radius: 10px;
   background: var(--panel);
   border: 1px solid var(--border);
   color: var(--text);
-  white-space: nowrap;
 }
-
 
 .sort-control label {
   font-size: 13px;
@@ -134,28 +126,18 @@ a { color: inherit; text-decoration: none; }
 }
 
 .sort-select {
-  width: 100%;                    /* 부모 폭 꽉 채우기 */
-  min-width: 200px;               /* 글자 안 잘릴 최소 폭 */
-  max-width: none;                /* ✅ 폭 제한 완전 제거 */
-  padding: 8px 32px 8px 12px;     /* 오른쪽 화살표 공간 확보 */
+  flex: 1;
+  min-width: 160px;
+  padding: 8px 10px;
   background: #ffffff;
-  color: #1f2a36;
+  color: var(--text);
   border: 1px solid var(--border);
   border-radius: 8px;
   outline: none;
   font-weight: 700;
   font-size: 14px;
-  line-height: 1.4;               /* ✅ 세로 잘림 방지 */
   height: 100%;
   font-family: "Noto Sans KR", "Inter", system-ui, -apple-system, sans-serif;
-  appearance: auto;
-  -webkit-appearance: menulist;
-  text-indent: 0;
-
-  /* ✅✅✅ 잘림 현상 완전 차단 */
-  white-space: nowrap;
-  overflow: visible;
-  text-overflow: unset;
 }
 
 .sort-select option {
@@ -178,8 +160,7 @@ a { color: inherit; text-decoration: none; }
   flex-direction: column;
   gap: 12px;
   background: linear-gradient(180deg, #ffffff, #f9f7f2);
-  min-height: 320px;
-  max-height: 440px;
+  height: 100%;
 }
 
 .card-head {
@@ -220,9 +201,6 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 14px;
-  flex: 1;
-  max-height: 300px;
-  overflow: auto;
 }
 
 .opened-message {
@@ -233,12 +211,13 @@ a { color: inherit; text-decoration: none; }
 }
 
 .capsule-media-rail {
-  display: flex;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 10px;
   width: 100%;
-  overflow-x: auto;
-  padding: 8px 4px 4px;
-  scroll-snap-type: x mandatory;
+  max-width: 520px;
+  padding: 6px;
 }
 
 .media-card {
@@ -246,13 +225,12 @@ a { color: inherit; text-decoration: none; }
   border-radius: 12px;
   padding: 8px;
   background: #ffffff;
-  width: 200px;
-  flex: 0 0 auto;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   box-sizing: border-box;
-  scroll-snap-align: start;
 }
 
 .audio-card audio {

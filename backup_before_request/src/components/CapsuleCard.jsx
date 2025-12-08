@@ -63,10 +63,12 @@ function CapsuleCard({ capsule, onDelete }) {
     <div className={`glass-card capsule-card ${isLocked ? 'locked' : 'unlocked'}`}>
       <div className="card-head">
         <div className="card-titles">
+          <p className="eyebrow-sm">Time Capsule</p>
           <h3>{capsule.title}</h3>
           {/* 저장일과 예정일 표기 */}
-          <p className="meta">저장일: {saveDate.format("YYYY-MM-DD")}</p>
-          <p className="meta">개봉 예정일: {openDate.format("YYYY-MM-DD")}</p>
+          <p className="meta">
+            저장일: {saveDate.format("YYYY-MM-DD")} · 개봉 예정일 {openDate.format("YYYY-MM-DD")}
+          </p>
         </div>
         <span className={`pill ${isLocked ? "pill-locked" : "pill-open"}`}>
           {isLocked ? "잠김" : "열림"}
