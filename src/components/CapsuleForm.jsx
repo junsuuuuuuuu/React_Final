@@ -1,26 +1,24 @@
 // src/components/CapsuleForm.jsx
-import { useState, useCallback } from "react"; // useCallback 최적화
+import { useState, useCallback } from "react";
 import { db, storage } from "../firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 
-// 파일명 중복 방지를 위해 타임스탬프를 붙이고, 파일명은 안전한 문자만 남긴다.
+// 파일명에 타임스탬프를 붙여 중복을 피하고 특수문자를 제거
 const sanitizeFileName = (name) => {
   const timestamp = Date.now();
   const extension = name.split(".").pop();
-  // 파일명에서 공백, 특수문자 제거
-  const baseName = name
-    .replace(/\s+/g, "_")
-    .replace(/[^a-zA-Z0-9_-]/g, "");
+  const baseName = name.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_-]/g, "");
   return `${baseName}_${timestamp}.${extension}`;
 };
 
 const MAX_FILES = 3;
 const ACCEPTED_TYPES = ["image/", "audio/"];
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 function CapsuleForm() {
-  // 기본 입력 필드 상태
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [openAt, setOpenAt] = useState("");
@@ -29,48 +27,73 @@ function CapsuleForm() {
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [fileError, setFileError] = useState("");
+  const [formError, setFormError] = useState("");
 
   const navigate = useNavigate();
 
-  // 파일 개별 삭제 핸들러
   const handleRemoveFile = useCallback((indexToRemove) => {
     setFiles((prevFiles) => prevFiles.filter((_, index) => index !== indexToRemove));
-  }, []); // files 의존성을 피해서 재생성 최소화
+  }, []);
 
   const handleFileChange = (e) => {
+    // 파일 타입/크기 검증 후 최대 3개까지만 유지
     const selectedFiles = Array.from(e.target.files);
     const allowedFiles = selectedFiles.filter((file) =>
       ACCEPTED_TYPES.some((prefix) => file.type.startsWith(prefix))
     );
-    const merged = [...files, ...allowedFiles];
+    const sizeSafeFiles = allowedFiles.filter((file) => file.size <= MAX_FILE_SIZE);
+    const merged = [...files, ...sizeSafeFiles];
     const limited = merged.slice(0, MAX_FILES);
 
     if (selectedFiles.length !== allowedFiles.length) {
-      setFileError("이미지와 오디오 파일만 업로드할 수 있어요.");
+      setFileError("이미지/오디오 파일만 업로드할 수 있어요.");
+    } else if (allowedFiles.length !== sizeSafeFiles.length) {
+      setFileError("파일 크기는 최대 10MB까지만 업로드할 수 있어요.");
     } else if (merged.length > MAX_FILES) {
-      setFileError("최대 3개의 파일까지 업로드할 수 있어요.");
+      setFileError("최대 3개의 파일까지만 업로드할 수 있어요.");
     } else {
       setFileError("");
     }
 
     setFiles(limited);
-
-    // 같은 파일을 다시 선택해도 change 이벤트가 발생하도록 input 값을 비운다.
-    e.target.value = null;
+    e.target.value = null; // 같은 파일 재선택도 이벤트 발생하게 초기화
   };
 
-  // 폼 제출
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
       setIsLoading(true);
       setFileError("");
+      setFormError("");
+
+      // 필수값 및 날짜 유효성 검증
+      const trimmedTitle = title.trim();
+      const trimmedMessage = message.trim();
+      const openDate = dayjs(openAt);
+
+      if (!trimmedTitle || !trimmedMessage || !openAt) {
+        setFormError("제목, 메시지, 개봉 예정일을 모두 입력해주세요.");
+        setIsLoading(false);
+        return;
+      }
+
+      if (!openDate.isValid()) {
+        setFormError("개봉 예정일을 올바른 날짜로 선택해주세요.");
+        setIsLoading(false);
+        return;
+      }
+
+      if (openDate.isBefore(dayjs(), "day")) {
+        setFormError("개봉 예정일은 오늘 이후 날짜를 선택해주세요.");
+        setIsLoading(false);
+        return;
+      }
 
       let fileUrls = [];
 
       try {
         if (files.length > 0) {
-          // 모든 파일을 병렬 업로드
+          // 모든 파일을 병렬로 업로드하고 URL 목록을 만든다
           const uploadPromises = files.map((file) => {
             const storageRef = ref(storage, `capsule_files/${sanitizeFileName(file.name)}`);
             return uploadBytes(storageRef, file).then((snapshot) =>
@@ -85,12 +108,11 @@ function CapsuleForm() {
           fileUrls = await Promise.all(uploadPromises);
         }
 
-        // 캡슐 데이터를 Firestore에 저장
         await addDoc(collection(db, "capsules"), {
-          title,
-          message,
+          title: trimmedTitle,
+          message: trimmedMessage,
           openAt,
-          fileUrls: fileUrls,
+          fileUrls,
           createdAt: new Date(),
         });
 
@@ -104,13 +126,14 @@ function CapsuleForm() {
       }
     },
     [files, title, message, openAt, navigate]
-  ); // 의존성 배열 명확히
+  );
+
   return (
     <form onSubmit={handleSubmit} className="glass-card capsule-form">
       <div className="form-header-block">
         <p className="eyebrow">Time Capsule</p>
         <h3>타임캡슐 만들기</h3>
-        <p className="helper-text">원하는 이미지와 음성 파일을 함께 담아보세요.</p>
+        <p className="helper-text">기억하고 싶은 이야기를 음성/이미지 파일과 함께 남겨보세요.</p>
       </div>
 
       <div className="field">
@@ -120,7 +143,7 @@ function CapsuleForm() {
         <input
           id="title-input"
           type="text"
-          placeholder="제목을 적어주세요"
+          placeholder="제목을 입력해주세요"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
@@ -133,7 +156,7 @@ function CapsuleForm() {
         </label>
         <textarea
           id="message-input"
-          placeholder="남기고 싶은 이야기, 들려주고 싶은 메시지를 적어주세요"
+          placeholder="미래의 나에게 남기고 싶은 메시지를 적어주세요"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           required
@@ -143,9 +166,7 @@ function CapsuleForm() {
       <div className="field">
         <label className="field-label">첨부 파일</label>
         <label className="file-label custom-button">
-          {files.length > 0
-            ? `첨부 ${files.length}/3개 선택됨`
-            : "사진/음성 파일 선택 (최대 3개)"}
+          {files.length > 0 ? `첨부 ${files.length}/3개 선택됨` : "사진/음성 파일 선택 (최대 3개)"}
           <input
             type="file"
             accept="image/*,audio/*"
@@ -156,7 +177,7 @@ function CapsuleForm() {
         </label>
       </div>
 
-      {/* 파일 선택/리스트 표시 영역 */}
+      {/* 첨부 파일 리스트 */}
       {files.length > 0 && (
         <div className="file-preview-list">
           {files.map((file, index) => (
@@ -165,18 +186,13 @@ function CapsuleForm() {
                 <span className="file-type">{file.type.startsWith("audio/") ? "AUDIO" : "IMAGE"}</span>
                 <span className="file-name">{file.name}</span>
               </div>
-              <button
-                type="button"
-                onClick={() => handleRemoveFile(index)}
-                className="remove-file-button"
-              >
+              <button type="button" onClick={() => handleRemoveFile(index)} className="remove-file-button">
                 X
               </button>
             </div>
           ))}
-          {/* 파일 전체 초기화 버튼 */}
           <button type="button" onClick={() => setFiles([])} className="reset-all-button">
-            파일 모두 지우기
+            첨부 파일 모두 지우기
           </button>
         </div>
       )}
@@ -199,8 +215,10 @@ function CapsuleForm() {
         />
       </div>
 
+      {formError && <p className="file-error">{formError}</p>}
+
       <button type="submit" className="primary-button" disabled={isLoading}>
-        {isLoading ? "올리는 중.." : "내 타임캡슐 저장하기"}
+        {isLoading ? "처리 중..." : "타임캡슐 저장하기"}
       </button>
     </form>
   );
