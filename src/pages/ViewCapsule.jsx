@@ -11,6 +11,7 @@ function ViewCapsule() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // 단일 캡슐 문서를 불러오는 비동기 함수
     const fetchCapsule = async () => {
       if (!id) return;
       setLoading(true);
@@ -35,6 +36,7 @@ function ViewCapsule() {
     fetchCapsule();
   }, [id]);
 
+  // fileUrls의 다양한 형태(string/object)를 일관된 배열로 정규화
   const attachments = useMemo(() => {
     if (!capsule) return [];
     const list = Array.isArray(capsule.fileUrls) ? capsule.fileUrls : capsule.fileUrl ? [capsule.fileUrl] : [];
@@ -71,6 +73,7 @@ function ViewCapsule() {
     );
   }
 
+  // 날짜 관련 파생 값 계산
   const openDate = dayjs(capsule.openAt);
   const saveDate = capsule.createdAt ? dayjs(capsule.createdAt.seconds ? capsule.createdAt.toDate() : capsule.createdAt) : null;
   const isLocked = dayjs().isBefore(openDate, "day");
