@@ -49,7 +49,12 @@ function CapsuleCard({ capsule, onDelete }) {
             const audioMatch = /\.(mp3|m4a|wav|aac|ogg)$/i.test(url);
             return {
               url,
-              type: file.type ? (file.type.startsWith("audio/") ? "audio" : "image") : audioMatch ? "audio" : "image",
+              // file.type이 "audio"처럼 slash가 없거나 비어 있어도 확장자로 보완
+              type: file.type
+                ? (file.type.startsWith("audio/") || file.type === "audio" ? "audio" : "image")
+                : audioMatch
+                ? "audio"
+                : "image",
               name: file.name || "",
             };
           }

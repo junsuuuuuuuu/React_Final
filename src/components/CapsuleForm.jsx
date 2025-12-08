@@ -99,7 +99,12 @@ function CapsuleForm() {
             return uploadBytes(storageRef, file).then((snapshot) =>
               getDownloadURL(snapshot.ref).then((url) => ({
                 url,
-                type: file.type.startsWith("audio/") ? "audio" : "image",
+                // MIME이 "audio"처럼 들어와도 오디오로 저장
+                type: file.type
+                  ? (file.type.startsWith("audio/") || file.type === "audio" ? "audio" : "image")
+                  : /\.(mp3|m4a|wav|aac|ogg)$/i.test(file.name)
+                  ? "audio"
+                  : "image",
                 name: file.name,
               }))
             );
